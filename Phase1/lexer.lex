@@ -4,7 +4,7 @@
 %}
 
 DIGIT [0-9]
-ALPHA [a-zA-z]
+ALPHA [a-zA-Z]
 ALPHANUM [0-9a-zA-Z]
 
 %%
