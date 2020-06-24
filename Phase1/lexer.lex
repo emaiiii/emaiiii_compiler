@@ -65,7 +65,7 @@ ALPHANUM [0-9a-zA-Z]
 "##".*			{currPos = 1;}
 
 {DIGIT}+ 					{printf("NUMBER %s\n", yytext); currPos += yyleng;}
-{ALPHA}(({ALPHANUM}|[_])*{ALPHANUM})? 		{printf("NUMBER %s\n", yytext); currPos += yyleng;}
+{ALPHA}(({ALPHANUM}|[_])*{ALPHANUM})? 		{printf("IDENT %s\n", yytext); currPos += yyleng;}
  
 .       		{printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", currLine, currPos, yytext); exit(0);}
 

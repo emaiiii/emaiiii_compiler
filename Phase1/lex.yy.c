@@ -1092,7 +1092,7 @@ YY_RULE_SETUP
 case 51:
 YY_RULE_SETUP
 #line 68 "lexer.lex"
-{printf("NUMBER %s\n", yytext); currPos += yyleng;}
+{printf("IDENT %s\n", yytext); currPos += yyleng;}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
