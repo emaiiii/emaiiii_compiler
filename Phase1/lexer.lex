@@ -64,6 +64,9 @@ ALPHANUM [0-9a-zA-Z]
 "\n"			{currLine++; currPos = 1;}
 "##".*			{currPos = 1;}
 
+{ALPHA}(({ALPHANUM}[_])*{ALPHANUM})?[_]+   		{printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currLine, currPos, yytext); exit(0);}
+([_]{ALPHANUM}+)|({DIGIT}+({ALPHANUM}+))  		{printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currLine, currPos, yytext); exit(0);}
+
 {DIGIT}+ 					{printf("NUMBER %s\n", yytext); currPos += yyleng;}
 {ALPHA}(({ALPHANUM}|[_])*{ALPHANUM})? 		{printf("IDENT %s\n", yytext); currPos += yyleng;}
  
