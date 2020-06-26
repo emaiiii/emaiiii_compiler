@@ -1,7 +1,7 @@
 build:
 	rm -f lex.yy.c
 	rm -f lexer
-	flex lexer.lex
+	flex mini_l.lex
 	gcc -o lexer lex.yy.c -lfl
 
 fib:
