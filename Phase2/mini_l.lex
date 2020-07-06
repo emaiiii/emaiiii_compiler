@@ -1,5 +1,5 @@
 %{
-   	#include "y.tab.h";
+   	#include "y.tab.h"
 	int currLine = 1; 
 	int currPos = 1;
 %}

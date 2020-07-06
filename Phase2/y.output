@@ -1,0 +1,193 @@
+Nonterminals useless in grammar
+
+   Declaration
+   Identifier
+
+
+Terminals unused in grammar
+
+   FUNCTION
+   BEGIN_PARAMS
+   END_PARAMS
+   BEGIN_LOCALS
+   END_LOCALS
+   BEGIN_BODY
+   END_BODY
+   INTEGER
+   ARRAY
+   OF
+   IF
+   THEN
+   ENDIF
+   ELSE
+   WHILE
+   DO
+   BEGINLOOP
+   ENDLOOP
+   CONTINUE
+   READ
+   WRITE
+   AND
+   OR
+   NOT
+   TRUE
+   FALSE
+   RETURN
+   SUB
+   ADD
+   MULT
+   DIV
+   MOD
+   EQ
+   NEQ
+   LT
+   GT
+   LTE
+   GTE
+   SEMICOLON
+   COLON
+   COMMA
+   L_PAREN
+   R_PAREN
+   L_SQUARE_BRACKET
+   R_SQUARE_BRACKET
+   ASSIGN
+   IDENT
+   NUMBER
+
+
+Rules useless in grammar
+
+    4 Declaration: Identifier COLON INTEGER
+    5            | Identifier COLON ARRAY L_SQUARE_BRACKET R_SQUARE_BRACKET OF INTEGER
+
+    6 Identifier: IDENT
+    7           | IDENT COMMA Identifier
+
+
+Rules useless in parser due to conflicts
+
+    3 Function: %empty
+
+
+State 0 conflicts: 1 reduce/reduce
+State 2 conflicts: 1 reduce/reduce
+
+
+Grammar
+
+    0 $accept: Program $end
+
+    1 Program: %empty
+    2        | Function Program
+
+    3 Function: %empty
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+FUNCTION (258)
+BEGIN_PARAMS (259)
+END_PARAMS (260)
+BEGIN_LOCALS (261)
+END_LOCALS (262)
+BEGIN_BODY (263)
+END_BODY (264)
+INTEGER (265)
+ARRAY (266)
+OF (267)
+IF (268)
+THEN (269)
+ENDIF (270)
+ELSE (271)
+WHILE (272)
+DO (273)
+BEGINLOOP (274)
+ENDLOOP (275)
+CONTINUE (276)
+READ (277)
+WRITE (278)
+AND (279)
+OR (280)
+NOT (281)
+TRUE (282)
+FALSE (283)
+RETURN (284)
+SUB (285)
+ADD (286)
+MULT (287)
+DIV (288)
+MOD (289)
+EQ (290)
+NEQ (291)
+LT (292)
+GT (293)
+LTE (294)
+GTE (295)
+SEMICOLON (296)
+COLON (297)
+COMMA (298)
+L_PAREN (299)
+R_PAREN (300)
+L_SQUARE_BRACKET (301)
+R_SQUARE_BRACKET (302)
+ASSIGN (303)
+IDENT (304)
+NUMBER (305)
+
+
+Nonterminals, with rules where they appear
+
+$accept (51)
+    on left: 0
+Program (52)
+    on left: 1 2, on right: 0 2
+Function (53)
+    on left: 3, on right: 2
+
+
+State 0
+
+    0 $accept: . Program $end
+
+    $end      reduce using rule 1 (Program)
+    $end      [reduce using rule 3 (Function)]
+    $default  reduce using rule 1 (Program)
+
+    Program   go to state 1
+    Function  go to state 2
+
+
+State 1
+
+    0 $accept: Program . $end
+
+    $end  shift, and go to state 3
+
+
+State 2
+
+    2 Program: Function . Program
+
+    $end      reduce using rule 1 (Program)
+    $end      [reduce using rule 3 (Function)]
+    $default  reduce using rule 1 (Program)
+
+    Program   go to state 4
+    Function  go to state 2
+
+
+State 3
+
+    0 $accept: Program $end .
+
+    $default  accept
+
+
+State 4
+
+    2 Program: Function Program .
+
+    $default  reduce using rule 2 (Program)
