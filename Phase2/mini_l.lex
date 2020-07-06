@@ -5,8 +5,9 @@
 %}
 
 DIGIT [0-9]
-ALPHA [a-zA-Z]
-ALPHANUM [0-9a-zA-Z]
+LETTER [a-zA-Z]
+ALPHANUMERIC [0-9a-zA-Z]
+IDENTIFIER {LETTER}((({ALPHANUMERIC}|_)*{ALPHANUMERIC}+)|{ALPHANUMERIC}*)
 
 %%
 "function"		{currPos += yyleng; return FUNCTION;}
@@ -65,13 +66,12 @@ ALPHANUM [0-9a-zA-Z]
 "\n"			{currLine++; currPos = 1;}
 "##".*			{currPos = 1;}
 
-{ALPHA}(({ALPHANUM}[_])*{ALPHANUM})?[_]+   					{printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currLine, currPos, yytext); exit(0);}
-([_]({ALPHANUM}|[_])+)|({DIGIT}+({ALPHA}|[_])({ALPHANUM}|[_])*)  		{printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currLine, currPos, yytext); exit(0);}
-
 {DIGIT}+ 					 {currPos += yyleng; return NUMBER;}
-{ALPHA}(({ALPHANUM}|[_])*{ALPHANUM})? 		 {currPos += yyleng; return IDENT;}
+{IDENTIFIER}					 {currPos += yyleng; return IDENT;}
 
-.       		{printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", currLine, currPos, yytext); exit(0);}
+({DIGIT}|_)+{IDENTIFIER} {printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currLine, currPos, yytext); exit(0);}
+{IDENTIFIER}_+           {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currLine, currPos, yytext); exit(0);}
+.                        {printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", currLine, currPos, yytext); exit(0);}
 
 %%
 
