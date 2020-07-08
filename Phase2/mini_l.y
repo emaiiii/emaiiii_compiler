@@ -120,6 +120,10 @@ multi_statement_else:							{printf("multi_statement_else -> epsilon\n");}
 									| ELSE multi_statement {printf("multi_statement_else -> ELSE multi_statement_else\n");}
 									;
 
+multi_var:								var {printf("multi_var -> var\n");}
+									| var COMMA multi_var {printf("multi_var -> var COMMA multi_var\n");}
+									;
+
 
 identifiers:             						IDENT {printf("identifiers -> IDENT %s\n", yytext);}
                         						| identifiers COMMA IDENT {printf("identifiers -> identifiers COMMA IDENT\n");}
