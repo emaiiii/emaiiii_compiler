@@ -14,7 +14,7 @@
 }
 
 %error-verbose
-%start program
+%start prog_start
 %token FUNCTION
 %token BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS BEGIN_BODY END_BODY
 %token INTEGER ARRAY
@@ -36,19 +36,23 @@
 
 %%
 
-program:                						{printf("program -> epsilon\n");}
-                        						| function program {printf("program -> function Program\n");}
+prog_start:                						{printf("prog_start -> epsilon\n");}
+                        						| function prog_start {printf("prog_start -> functions\n");}
                         						;
 
 function:               						FUNCTION IDENT SEMICOLON BEGIN_PARAMS multi_declaration END_PARAMS BEGIN_LOCALS multi_declaration END_LOCALS BEGIN_BODY multi_statement END_BODY
 										{printf("function -> FUNCTION IDENT SEMICOLON BEGIN_PARAMS multi_declaration END_PARAMS BEGIN_LOCALS multi_declaration END_LOCALS BEGIN_BODY multi_statement END_BODY\n");}
+									FUNCTION IDENT error BEGIN_PARAMS multi_declaration END_PARAMS BEGIN_LOCALS multi_declaration END_LOCALS BEGIN_BODY multi_statement END_BODY
 									;
 
 declaration:            						identifiers COLON INTEGER {printf("declaration -> identifiers COLON INTEGER\n");}
+									| identifiers error INTEGER
                         						| identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER\n");}
-                        						;
+                        					        | identifiers error ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER	
+									;
 
-statement:								identifiers ASSIGN exp {printf("statement -> identifiers ASSIGN exp\n");}
+statement:								var ASSIGN exp {printf("statement -> identifiers ASSIGN exp\n");}
+									| var error exp
 									| IF bool_exp THEN multi_statement multi_statement_else ENDIF {printf("statement -> IF bool_exp THEN multi_statement multi_statement_else ENDIF\n");}
 									| WHILE bool_exp BEGINLOOP multi_statement ENDLOOP {printf("statement -> WHILE bool_exp BEGINLOOP multi_statement ENDLOOP\n");}
 									| DO BEGINLOOP multi_statement ENDLOOP WHILE bool_exp {printf("statement -> DO BEGINLOOP multi_statement ENDLOOP WHILE bool_exp\n");}
@@ -108,7 +112,7 @@ multi_exp:								exp {printf("multi_exp -> exp\n");}
 									| exp COMMA multi_exp {printf("multi_exp -> exp COMMA multi_exp\n");}
 									;
 
-multi_declaration:							{printf("multi_declaration -> epsilon");}
+multi_declaration:							{printf("multi_declaration -> epsilon \n");}
 									| declaration SEMICOLON multi_declaration {printf("multi_declaration -> declaration SEMICOLON multi_declaration\n");}
 									;
 
@@ -121,12 +125,12 @@ multi_statement_else:							{printf("multi_statement_else -> epsilon\n");}
 									;
 
 multi_var:								var {printf("multi_var -> var\n");}
-									| var COMMA multi_var {printf("multi_var -> var COMMA multi_var\n");}
+									| multi_var COMMA var {printf("multi_var ->multi_var COMMA var \n");}
 									;
 
 
 identifiers:             						IDENT {printf("identifiers -> IDENT %s\n", yytext);}
-                        						| identifiers COMMA IDENT {printf("identifiers -> identifiers COMMA IDENT\n");}
+                        						| identifiers COMMA IDENT {printf("identifiers -> identifiers COMMA IDENT \n");}
                         						;
 
 var:									IDENT {printf("var -> IDENT %s\n", yytext);}
