@@ -134,6 +134,10 @@ var:									IDENT {printf("var -> IDENT %s\n", yytext);}
 
 %%
 
+int main(int argc, char **argv) {
+   	yyparse(); 
+}
+
 void yyerror(const char *msg){
         printf("Error: %s at symbol \"%s\" on line %d\n", msg, yytext, currLine);
 }

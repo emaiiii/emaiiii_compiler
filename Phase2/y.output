@@ -1,3 +1,14 @@
+Nonterminals useless in grammar
+
+   multi_var
+
+
+Rules useless in grammar
+
+   58 multi_var: var
+   59          | var COMMA multi_var
+
+
 Grammar
 
     0 $accept: program $end

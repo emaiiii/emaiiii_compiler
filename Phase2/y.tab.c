@@ -492,7 +492,7 @@ static const yytype_uint8 yyrline[] =
       70,    71,    72,    73,    74,    75,    76,    79,    80,    81,
       82,    83,    84,    87,    88,    89,    92,    93,    94,    95,
       98,    99,   100,   101,   102,   103,   104,   107,   108,   111,
-     112,   115,   116,   119,   120,   124,   125,   128,   129
+     112,   115,   116,   119,   120,   128,   129,   132,   133
 };
 #endif
 
@@ -1666,25 +1666,25 @@ yyreduce:
     break;
 
   case 55:
-#line 124 "mini_l.y" /* yacc.c:1646  */
+#line 128 "mini_l.y" /* yacc.c:1646  */
     {printf("identifiers -> IDENT %s\n", yytext);}
 #line 1672 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 125 "mini_l.y" /* yacc.c:1646  */
+#line 129 "mini_l.y" /* yacc.c:1646  */
     {printf("identifiers -> identifiers COMMA IDENT\n");}
 #line 1678 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 128 "mini_l.y" /* yacc.c:1646  */
+#line 132 "mini_l.y" /* yacc.c:1646  */
     {printf("var -> IDENT %s\n", yytext);}
 #line 1684 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 129 "mini_l.y" /* yacc.c:1646  */
+#line 133 "mini_l.y" /* yacc.c:1646  */
     {printf("var -> IDENT L_SQUARE_BRACKET exp R_SQUARE_BRACKET");}
 #line 1690 "y.tab.c" /* yacc.c:1646  */
     break;
@@ -1918,8 +1918,12 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 131 "mini_l.y" /* yacc.c:1906  */
+#line 135 "mini_l.y" /* yacc.c:1906  */
 
+
+int main(int argc, char **argv) {
+   	yyparse(); 
+}
 
 void yyerror(const char *msg){
         printf("Error: %s at symbol \"%s\" on line %d\n", msg, yytext, currLine);
