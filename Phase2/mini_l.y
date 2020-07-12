@@ -56,8 +56,8 @@ statement:								var ASSIGN exp {printf("statement -> identifiers ASSIGN exp\n"
 									| IF bool_exp THEN multi_statement multi_statement_else ENDIF {printf("statement -> IF bool_exp THEN multi_statement multi_statement_else ENDIF\n");}
 									| WHILE bool_exp BEGINLOOP multi_statement ENDLOOP {printf("statement -> WHILE bool_exp BEGINLOOP multi_statement ENDLOOP\n");}
 									| DO BEGINLOOP multi_statement ENDLOOP WHILE bool_exp {printf("statement -> DO BEGINLOOP multi_statement ENDLOOP WHILE bool_exp\n");}
-									| READ identifiers {printf("statement -> READ identifiers\n");}
-									| WRITE identifiers {printf("statement -> WRITE identifiers\n");}
+									| READ multi_var {printf("statement -> READ multi_var\n");}
+									| WRITE multi_var {printf("statement -> WRITE multi_var\n");}
 									| CONTINUE {printf("statement -> CONTINUE\n");}
 									| RETURN exp {printf("statement -> RETURN exp\n");}
 									;
@@ -124,8 +124,8 @@ multi_statement_else:							{printf("multi_statement_else -> epsilon\n");}
 									| ELSE multi_statement {printf("multi_statement_else -> ELSE multi_statement_else\n");}
 									;
 
-multi_var:								var {printf("multi_var -> var\n");}
-									| multi_var COMMA var {printf("multi_var ->multi_var COMMA var \n");}
+multi_var:								var {printf("multi_var -> var \n");}
+									|multi_var COMMA var {printf("multi_var -> multi_var COMMA var \n");}
 									;
 
 
