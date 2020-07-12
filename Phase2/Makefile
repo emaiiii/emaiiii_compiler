@@ -1,24 +1,13 @@
-build:
-	rm -f lex.yy.c
-	rm -f lexer
+build: 
+	bison -v -d --file-prefix=y mini_l.y
 	flex mini_l.lex
-	gcc -o lexer lex.yy.c -lfl
+	gcc -o parser y.tab.c lex.yy.c -lfl
 
-fib:
-	cat fibonacci.min | ./lexer
+fib: 
+	cat fibonacci.min | ./parser		
 
 mytest:
-	cat mytest.min | ./lexer
+	cat mytest.min | ./parser
 
 primes:
-	cat primes.min | ./lexer
-
-err1:
-	cat errtest1.min | ./lexer
-
-err2:
-	cat errtest2.min | ./lexer		
-
-clean:
-	rm -f lex.yy.c
-	rm -f lexer
+	cat primes.min | ./parser
