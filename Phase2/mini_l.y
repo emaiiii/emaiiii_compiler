@@ -85,13 +85,13 @@ multi_exp:          {printf("multi_exp -> epsilon\n");}
                     | exp {printf("multi_exp -> exp\n");}
                     ;
 
-multiplic_exp:        term{printf("multiplic_exp -> term\n");}
+multiplic_exp:      term{printf("multiplic_exp -> term\n");}
                     | term MULT multiplic_exp {printf("multiplic_exp -> term MULT multiplic_exp\n");}
                     | term DIV multiplic_exp {printf("multiplic_exp -> term DIV multiplic_exp\n");}
                     | term MOD multiplic_exp {printf("multiplic_exp -> term MOD multiplic_exp\n");}
                     ;
 
-term:           	identifiers {printf("term -> identifier\n");}
+term:          	    identifiers {printf("term -> identifier\n");}
                     | SUB identifiers {printf("term -> SUB identifier\n");}
                     | NUMBER {printf("term -> NUMBER %d\n", $1);}
                     | SUB NUMBER {printf("term -> SUB NUMBER %d\n", $2);}
@@ -99,11 +99,11 @@ term:           	identifiers {printf("term -> identifier\n");}
                     | exp_loop {printf("term -> exp_loop\n");}
                     ;
 
-exp_loop:   		L_PAREN exp R_PAREN {printf("term -> L_PAREN exp R_PAREN\n");}|
+exp_loop:   	    L_PAREN exp R_PAREN {printf("term -> L_PAREN exp R_PAREN\n");}|
                     | identifiers L_PAREN multi_exp R_PAREN {printf("term -> Ident L_PAREN multi_exp R_PAREN\n");}
                     ;
 
-bool_exp:  			rel_and_exp {printf("bool_exp -> rel_exp\n");}
+bool_exp:  	    rel_and_exp {printf("bool_exp -> rel_exp\n");}
                     | rel_and_exp OR bool_exp {printf("bool_exp -> rel_and_exp OR bool_exp\n");}
                     ;
 
@@ -111,7 +111,7 @@ rel_and_exp:        rel_exp {printf("rel_and_exp -> rel_exp\n");}
                     | rel_exp AND rel_and_exp {printf("rel_and_exp -> rel_exp AND rel_and_exp\n");}
                     ;
 
-rel_exp:        	NOT rel_exp_paths {printf("rel_exp -> NOT BoolValue\n");}
+rel_exp:            NOT rel_exp_paths {printf("rel_exp -> NOT BoolValue\n");}
                     | rel_exp_paths {printf("rel_exp -> BoolValue\n");}
                     ;
 
@@ -121,7 +121,7 @@ rel_exp_paths:      exp comp exp {printf("rel_exp -> exp comp exp\n");}
                     | L_PAREN bool_exp R_PAREN {printf("rel_exp -> L_PAREN bool_exp R_PAREN\n");}
                     ;
 
-comp:       		EQ {printf("comp -> EQ\n");}
+comp:       	    EQ {printf("comp -> EQ\n");}
                     | NEQ {printf("comp -> NEQ\n");}
                     | LT {printf("comp -> LT\n");}
                     | GT {printf("comp -> GT\n");}
