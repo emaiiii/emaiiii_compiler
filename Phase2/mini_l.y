@@ -48,7 +48,7 @@ function:           FUNCTION identifier SEMICOLON BEGIN_PARAMS multi_decl END_PA
 
 declaration:        identifiers COLON INTEGER {printf("declaration -> identifiers COLON INTEGER\n");}
                     | identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
-		              {printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER %d R_SQUARE_BRACKET OF INTEGER;\n", $5);}
+		              {printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER;\n");}
                     ;
 
 multi_decl:         {printf("multi_decl -> epsilon\n");}

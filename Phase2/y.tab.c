@@ -1395,7 +1395,7 @@ yyreduce:
 
   case 7:
 #line 51 "mini_l.y" /* yacc.c:1646  */
-    {printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER %d R_SQUARE_BRACKET OF INTEGER;\n", (yyvsp[-3].nval));}
+    {printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER;\n");}
 #line 1400 "y.tab.c" /* yacc.c:1646  */
     break;
 
