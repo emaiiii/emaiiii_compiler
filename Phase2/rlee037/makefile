@@ -1,12 +1,7 @@
 lex_mini:
 	make clean
-	flex mini_l.lex
+	flex mini_l_rlee037.lex
 	gcc -o mini_l.o lex.yy.c -lfl
-
-lex_calc:
-	rm -f lex.yy.c mini_l calc *.o *~
-	flex calc.lex
-	gcc -o calc.o lex.yy.c -lfl
 
 fibonacci:
 	make clean && make bison
@@ -20,16 +15,9 @@ primes:
 	make clean && make bison
 	cat primes.min | parser
 
-error:
-	make clean && make bison
-	cat error_test.min | parser
-
-lex_calctest:
-	cat calc_test.min | ./calc.o
-
 bison:
-	bison -v -d --file-prefix=y mini_l.y
-	flex mini_l.lex
+	bison -v -d --file-prefix=y mini_l_rlee037.y
+	flex mini_l_rlee037.lex
 	gcc -o parser y.tab.c lex.yy.c -lfl
 
 clean:
