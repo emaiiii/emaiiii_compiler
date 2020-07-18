@@ -58,9 +58,12 @@ extern char* yytext;
 
 %%
 
-program: function      {printf("program -> function\n");}
+program: functions     {printf("program -> functions\n");}
        | /* epsilon */ {printf("program -> epsilon");}
        ;
+
+functions: function function {printf("functions -> function function\n");}
+         | function          {printf("functions -> function\n");}
 
 function: FUNCTION identifier SEMICOLON BEGIN_PARAMS declarations END_PARAMS
                                         BEGIN_LOCALS declarations END_LOCALS
@@ -151,9 +154,9 @@ multiplicative_expression: signed_term MULT multiplicative_expression {printf("m
 signed_term: sign term {printf("signed_term -> sign term\n");}
            ;
 
-term: variable                                      {printf("term -> variable\n");}
-    | number                                        {printf("term -> number\n");}
-    | L_PAREN expression R_PAREN                    {printf("term -> L_PAREN expression R_PAREN\n");}
+term: variable                               {printf("term -> variable\n");}
+    | number                                 {printf("term -> number\n");}
+    | L_PAREN expression R_PAREN             {printf("term -> L_PAREN expression R_PAREN\n");}
     | identifier L_PAREN expressions R_PAREN {printf("term -> identifier L_PAREN nested_expressions R_PAREN\n");}
     ;
 
@@ -163,10 +166,9 @@ expressions: expressions COMMA expression {printf("expressions -> expressions CO
 
 sign: SUB           {printf("sign -> SUB\n");}
     | /* epsilon */ {printf("sign -> epsilon\n");} 
+    ;
 
-        ;
-
-variable: identifier {printf("variable -> identifier\n");}
+variable: identifier                                              {printf("variable -> identifier\n");}
         | identifier L_SQUARE_BRACKET expression R_SQUARE_BRACKET {printf("variable -> identifier L_SQUARE_BRACKET expression R_SQUARE_BRACKET\n");}
         ;
 
