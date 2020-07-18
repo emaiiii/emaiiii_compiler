@@ -35,17 +35,6 @@ void yyerror(const char* msg);
 %token <idval> IDENT
 %token <nval> NUMBER
 
-%right ASSIGN
-%left  OR
-%left  AND 
-%right NOT
-%left  MOD
-%left  DIV
-%left  MULT
-%right SUB
-%left  L_SQUARE_BRACKET R_SQUARE_BRACKET
-%left  L_PAREN R_PAREN
-
 %%
 
 prog_start:         {printf("prog_start -> epsilon\n");}
@@ -87,8 +76,8 @@ else:               {printf("else -> epsilon\n");}
                     ;
 
 exp:                multiplic_exp {printf("exp -> multiplic_exp\n");}
-                    | exp ADD multiplic_exp{printf("exp -> multiplic_exp ADD exp\n");}
-                    | exp SUB multiplic_exp {printf("exp -> multiplic_exp SUB exp\n");}
+                    | multiplic_exp ADD exp{printf("exp -> multiplic_exp ADD exp\n");}
+                    | multiplic_exp SUB exp {printf("exp -> multiplic_exp SUB exp\n");}
                     ;
 
 multi_exp:          {printf("multi_exp -> epsilon\n");}
@@ -97,9 +86,9 @@ multi_exp:          {printf("multi_exp -> epsilon\n");}
                     ;
 
 multiplic_exp:      term{printf("multiplic_exp -> term\n");}
-                    | multiplic_exp MULT term {printf("multiplic_exp -> term MULT multiplic_exp\n");}
-                    | multiplic_exp DIV term {printf("multiplic_exp -> term DIV multiplic_exp\n");}
-                    | multiplic_exp MOD term {printf("multiplic_exp -> term MOD multiplic_exp\n");}
+                    | term MULT multiplic_exp {printf("multiplic_exp -> term MULT multiplic_exp\n");}
+                    | term DIV multiplic_exp {printf("multiplic_exp -> term DIV multiplic_exp\n");}
+                    | term MOD multiplic_exp {printf("multiplic_exp -> term MOD multiplic_exp\n");}
                     ;
 
 term:          	    identifiers {printf("term -> identifier\n");}
