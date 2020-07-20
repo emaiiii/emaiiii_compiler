@@ -35,6 +35,17 @@ void yyerror(const char* msg);
 %token <idval> IDENT
 %token <nval> NUMBER
 
+%right ASSIGN
+%left  OR
+%left  AND 
+%right NOT
+%left  MOD
+%left  DIV
+%left  MULT
+%right SUB
+%left  L_SQUARE_BRACKET R_SQUARE_BRACKET
+%left  L_PAREN R_PAREN
+
 %%
 
 prog_start:         {printf("prog_start -> epsilon\n");}
@@ -76,8 +87,8 @@ else:               {printf("else -> epsilon\n");}
                     ;
 
 exp:                multiplic_exp {printf("exp -> multiplic_exp\n");}
-                    | multiplic_exp ADD exp{printf("exp -> multiplic_exp ADD exp\n");}
-                    | multiplic_exp SUB exp {printf("exp -> multiplic_exp SUB exp\n");}
+                    | exp ADD multiplic_exp{printf("exp -> exp ADD multiplic_exp\n");}
+                    | exp SUB multiplic_exp {printf("exp -> exp SUB multiplic_exp\n");}
                     ;
 
 multi_exp:          {printf("multi_exp -> epsilon\n");}
