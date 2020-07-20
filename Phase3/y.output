@@ -2,8 +2,8 @@ State 15 conflicts: 2 shift/reduce
 State 22 conflicts: 1 shift/reduce
 State 30 conflicts: 1 shift/reduce
 State 40 conflicts: 1 shift/reduce
+State 44 conflicts: 1 shift/reduce
 State 45 conflicts: 1 shift/reduce
-State 46 conflicts: 1 shift/reduce
 State 47 conflicts: 1 shift/reduce
 State 48 conflicts: 1 shift/reduce
 State 49 conflicts: 1 shift/reduce
@@ -56,8 +56,8 @@ Grammar
    22     | ELSE multi_stat
 
    23 exp: multiplic_exp
-   24    | multiplic_exp ADD exp
-   25    | multiplic_exp SUB exp
+   24    | exp ADD multiplic_exp
+   25    | exp SUB multiplic_exp
 
    26 multi_exp: %empty
    27          | exp COMMA multi_exp
@@ -545,19 +545,18 @@ State 31
 
 State 32
 
+   24 exp: exp . ADD multiplic_exp
+   25    | exp . SUB multiplic_exp
    59 identifiers: identifier L_SQUARE_BRACKET exp . R_SQUARE_BRACKET
 
-    R_SQUARE_BRACKET  shift, and go to state 44
+    SUB               shift, and go to state 44
+    ADD               shift, and go to state 45
+    R_SQUARE_BRACKET  shift, and go to state 46
 
 
 State 33
 
    23 exp: multiplic_exp .
-   24    | multiplic_exp . ADD exp
-   25    | multiplic_exp . SUB exp
-
-    SUB  shift, and go to state 45
-    ADD  shift, and go to state 46
 
     $default  reduce using rule 23 (exp)
 
@@ -657,21 +656,18 @@ State 42
 
 State 43
 
+   24 exp: exp . ADD multiplic_exp
+   25    | exp . SUB multiplic_exp
    39 exp_loop: L_PAREN exp . R_PAREN
 
+    SUB      shift, and go to state 44
+    ADD      shift, and go to state 45
     R_PAREN  shift, and go to state 55
 
 
 State 44
 
-   59 identifiers: identifier L_SQUARE_BRACKET exp R_SQUARE_BRACKET .
-
-    $default  reduce using rule 59 (identifiers)
-
-
-State 45
-
-   25 exp: multiplic_exp SUB . exp
+   25 exp: exp SUB . multiplic_exp
 
     SUB      shift, and go to state 29
     L_PAREN  shift, and go to state 30
@@ -681,8 +677,26 @@ State 45
     SUB       [reduce using rule 40 (exp_loop)]
     $default  reduce using rule 40 (exp_loop)
 
-    exp            go to state 56
-    multiplic_exp  go to state 33
+    multiplic_exp  go to state 56
+    term           go to state 34
+    exp_loop       go to state 35
+    identifiers    go to state 36
+    identifier     go to state 15
+
+
+State 45
+
+   24 exp: exp ADD . multiplic_exp
+
+    SUB      shift, and go to state 29
+    L_PAREN  shift, and go to state 30
+    IDENT    shift, and go to state 4
+    NUMBER   shift, and go to state 31
+
+    SUB       [reduce using rule 40 (exp_loop)]
+    $default  reduce using rule 40 (exp_loop)
+
+    multiplic_exp  go to state 57
     term           go to state 34
     exp_loop       go to state 35
     identifiers    go to state 36
@@ -691,22 +705,9 @@ State 45
 
 State 46
 
-   24 exp: multiplic_exp ADD . exp
+   59 identifiers: identifier L_SQUARE_BRACKET exp R_SQUARE_BRACKET .
 
-    SUB      shift, and go to state 29
-    L_PAREN  shift, and go to state 30
-    IDENT    shift, and go to state 4
-    NUMBER   shift, and go to state 31
-
-    SUB       [reduce using rule 40 (exp_loop)]
-    $default  reduce using rule 40 (exp_loop)
-
-    exp            go to state 57
-    multiplic_exp  go to state 33
-    term           go to state 34
-    exp_loop       go to state 35
-    identifiers    go to state 36
-    identifier     go to state 15
+    $default  reduce using rule 59 (identifiers)
 
 
 State 47
@@ -812,8 +813,12 @@ State 53
 
 State 54
 
+   24 exp: exp . ADD multiplic_exp
+   25    | exp . SUB multiplic_exp
    37 term: SUB L_PAREN exp . R_PAREN
 
+    SUB      shift, and go to state 44
+    ADD      shift, and go to state 45
     R_PAREN  shift, and go to state 66
 
 
@@ -826,14 +831,14 @@ State 55
 
 State 56
 
-   25 exp: multiplic_exp SUB exp .
+   25 exp: exp SUB multiplic_exp .
 
     $default  reduce using rule 25 (exp)
 
 
 State 57
 
-   24 exp: multiplic_exp ADD exp .
+   24 exp: exp ADD multiplic_exp .
 
     $default  reduce using rule 24 (exp)
 
@@ -861,9 +866,13 @@ State 60
 
 State 61
 
+   24 exp: exp . ADD multiplic_exp
+   25    | exp . SUB multiplic_exp
    27 multi_exp: exp . COMMA multi_exp
    28          | exp .
 
+    SUB    shift, and go to state 44
+    ADD    shift, and go to state 45
     COMMA  shift, and go to state 67
 
     $default  reduce using rule 28 (multi_exp)
@@ -1196,8 +1205,12 @@ State 87
 
 State 88
 
+   24 exp: exp . ADD multiplic_exp
+   25    | exp . SUB multiplic_exp
    48 rel_exp_paths: exp . comp exp
 
+    SUB  shift, and go to state 44
+    ADD  shift, and go to state 45
     EQ   shift, and go to state 108
     NEQ  shift, and go to state 109
     LT   shift, and go to state 110
@@ -1293,6 +1306,11 @@ State 97
 State 98
 
    18 statement: RETURN exp .
+   24 exp: exp . ADD multiplic_exp
+   25    | exp . SUB multiplic_exp
+
+    SUB  shift, and go to state 44
+    ADD  shift, and go to state 45
 
     $default  reduce using rule 18 (statement)
 
@@ -1390,9 +1408,13 @@ State 105
 
 State 106
 
+   24 exp: exp . ADD multiplic_exp
+   25    | exp . SUB multiplic_exp
    39 exp_loop: L_PAREN exp . R_PAREN
    48 rel_exp_paths: exp . comp exp
 
+    SUB      shift, and go to state 44
+    ADD      shift, and go to state 45
     EQ       shift, and go to state 108
     NEQ      shift, and go to state 109
     LT       shift, and go to state 110
@@ -1592,6 +1614,11 @@ State 121
 State 122
 
    10 statement: identifiers error exp .
+   24 exp: exp . ADD multiplic_exp
+   25    | exp . SUB multiplic_exp
+
+    SUB  shift, and go to state 44
+    ADD  shift, and go to state 45
 
     $default  reduce using rule 10 (statement)
 
@@ -1599,6 +1626,11 @@ State 122
 State 123
 
     9 statement: identifiers ASSIGN exp .
+   24 exp: exp . ADD multiplic_exp
+   25    | exp . SUB multiplic_exp
+
+    SUB  shift, and go to state 44
+    ADD  shift, and go to state 45
 
     $default  reduce using rule 9 (statement)
 
@@ -1612,7 +1644,12 @@ State 124
 
 State 125
 
+   24 exp: exp . ADD multiplic_exp
+   25    | exp . SUB multiplic_exp
    48 rel_exp_paths: exp comp exp .
+
+    SUB  shift, and go to state 44
+    ADD  shift, and go to state 45
 
     $default  reduce using rule 48 (rel_exp_paths)
 

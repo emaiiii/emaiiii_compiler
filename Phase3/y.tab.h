@@ -105,8 +105,8 @@ union YYSTYPE
 {
 #line 12 "mini_l.y" /* yacc.c:1909  */
 
-    	char* idval;
-    	int nval;
+    char* idval;
+    int nval;
 
 #line 112 "y.tab.h" /* yacc.c:1909  */
 };
