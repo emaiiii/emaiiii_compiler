@@ -1,0 +1,9 @@
+function main;
+beginparams
+endparams
+beginlocals
+  a1, a2, a3 : array[5] of integer;
+  i1, i2, i3: integer; 
+endlocals
+beginbody
+endbody
