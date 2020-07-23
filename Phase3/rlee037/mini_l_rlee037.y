@@ -28,16 +28,44 @@
 #include <functional>
 using namespace std;
   /* define structures used as types for non-terminals */
+  void appendIDs(list<string>* appendTo, const list<string> copyFrom);
   struct code_struct {
     string code;
     list<string> ids;
+  };
+  struct exp_struct {
+    string code;
+    list<string> ids;
+    string dst;
+    string src1;
+    string src2;
+    string op;
+    exp_struct() {code = ""; dst = "", src1 = "", src2 = "", op = "";}
+    exp_struct(string c, const list<string> idList, string d, string s1, string s2, string o) {
+      code = c;
+      appendIDs(&ids, idList);
+      dst  = d;
+      src1 = s1;
+      src2 = s2;
+      op   = o;
+    }
+    void setexp(string d, string s1, string s2, string o) {
+      dst  = d;
+      src1 = s1;
+      src2 = s2;
+      op   = o;
+      ids.push_back(s1);
+      ids.push_back(s2);
+      ids.push_back(d);
+    }
   };
   struct var {
     string id;
     bool   isArray;
     string index;
-    var() {id = ""; isArray = false; index = "";}
-    var(string varID, bool isArr, string i) {id = varID, isArray = isArr, index = i;}
+    string code;
+    var() {id = ""; isArray = false; index = "", code = "";}
+    var(string varID, bool isArr, string i, string exp) {id = varID, isArray = isArr, index = i; code = exp;}
   };
   struct var_struct {
     list<var> vars;
@@ -65,6 +93,22 @@ yy::parser::symbol_type yylex();
   list<string> symbol_table;
   void appendIDs(list<string>* appendTo, const list<string> copyFrom) {
     appendTo->insert(appendTo->end(), copyFrom.begin(), copyFrom.end());
+  }
+  string getLastLine(const string code) {
+    string temp;
+    if (code.size() < 3 && code.size() > 0) {
+      temp = code.at(0);
+    } else {
+      for (int i = code.size() - 2; i == 0 | code.at(i) == '\n'; --i) {
+       temp.insert(0, 1, code.at(i)); 
+      }
+    }
+    return temp;
+  }
+  string setIndex(const var v) {
+    string exp;
+    //
+    return exp;
   }
   /* end code */
 }
@@ -111,8 +155,9 @@ yy::parser::symbol_type yylex();
 %left  L_PAREN R_PAREN
 
 %type<string>      IDENT NUMBER
-%type<string>      program function comp signed_term sign term number identifier
-%type<code_struct> declarations declaration statements statement bool_expression relation_and_expression not_relation_expression relation_expression expression multiplicative_expression
+%type<string>      program function comp sign number identifier not
+%type<code_struct> declarations declaration statements statement else_statement signed_term term
+%type<exp_struct>  bool_expression relation_and_expression not_relation_expression relation_expression expressions expression multiplicative_expression
 %type<ids_struct>  identifiers
 %type<var_struct>  variables variable
 
@@ -141,12 +186,12 @@ function: FUNCTION identifier SEMICOLON BEGIN_PARAMS declarations END_PARAMS
             }
             //end params
             //begin locals
-            $$ += $8.code + "\n";
+            $$ += $8.code;
             //end locals
             //begin body
             $$ += $11.code;
             //end body
-            $$ += "endfunc";
+            $$ += "endfunc\n";
           }
         ;
 
@@ -191,23 +236,42 @@ number: NUMBER {$$ = $1;}
 statement: variable ASSIGN expression
            {
              $$.code = $3.code;
-             list<string>::iterator iit = $3.ids.end();
-             string src = "";//*iit;
-             list<var>::iterator vit = $1.vars.end();
-             if (vit->isArray) {
-               string temp = ""; 
-               string index = vit->id;
-               $$.code += "[]= " + vit->id + ", " + src + index;
+//cout << $$.code << endl;
+             string src = $3.dst;
+             if ($1.vars.begin()->isArray) {
+               string index = $1.vars.begin()->index;
+               $$.code += "[]= " + $1.vars.begin()->id + ", " + src + ", " + index;
              } else {
-               $$.code += "= " + vit->id + ", " + src;
+               $$.code += "= " + $1.vars.begin()->id + ", " + src;
              }
+             appendIDs(&$$.ids, $3.ids);
              $$.code += "\n";
            }
          | IF bool_expression THEN statements else_statement ENDIF {printf("statement -> IF bool_expression THEN multi_statement else_statement ENDIF\n");}
          | WHILE bool_expression BEGINLOOP statements ENDLOOP      {printf("statement -> WHILE bool_expression BEGINLOOP multi_statement ENDLOOP\n");}
          | DO BEGINLOOP statements ENDLOOP WHILE bool_expression   {printf("statement -> DO BEGINLOOP multi_statement ENDLOOP WHILE bool_expression\n");}
-         | READ variables                                          {printf("statement -> READ variables\n");}
-         | WRITE variables                                         {printf("statement -> WRITE variables\n");}
+         | READ variables
+           {
+             for (list<var>::iterator it = $2.vars.begin(); it != $2.vars.end(); ++it) {
+               if (it->isArray) {
+                 $$.code += ".[]< " + it->id + ", " + it->index + "\n";
+               } else {
+                 $$.code += ".< " + it->id + "\n";
+               }
+               $$.ids.push_back(it->id);
+             }
+           }
+         | WRITE variables
+           {
+             for (list<var>::iterator it = $2.vars.begin(); it != $2.vars.end(); ++it) {
+               if (it->isArray) {
+                 $$.code += ".[]> " + it->id + ", " + it->index + "\n";
+               } else {
+                 $$.code += ".> " + it->id + "\n";
+               }
+               $$.ids.push_back(it->id);
+             }
+           }
          | CONTINUE                                                {printf("statement -> CONTINUE\n");}
          | RETURN expression                                       {printf("statement -> RETURN expression\n");}
          ;
@@ -218,11 +282,11 @@ statements: statement SEMICOLON statements
               appendIDs(&$$.ids, $1.ids);
               appendIDs(&$$.ids, $3.ids);
             }
-          | /* epsilon */                  {$$.code = ""; $$.ids = list<string>();}
+          | /* epsilon */ {$$.code = ""; $$.ids = list<string>();}
           ;
 
 else_statement: ELSE statements               {printf("else_statement -> ELSE statements\n");}
-              | /* epsilon */                 {printf("else_statement -> epsilon\n");}
+              | /* epsilon */                 {$$.code = ""; $$.ids = list<string>();}
               ;
 
 variables: variable COMMA variables
@@ -250,8 +314,8 @@ relation_expression: L_PAREN bool_expression R_PAREN {printf("relation_expressio
                    | expression comp expression      {printf("relation_expression -> expression comp expression\n");}
                    ;
 
-not: NOT           {printf("not -> NOT\n");} 
-   | /* epsilon */ {printf("not -> epsilon\n");}
+not: NOT           {$$ = "!";} 
+   | /* epsilon */ {$$ = "";}
    ;
 
 comp: EQ  {$$ = "==";}
@@ -262,48 +326,54 @@ comp: EQ  {$$ = "==";}
     | GTE {$$ = ">=";}
     ;
 
-expression: expression ADD multiplicative_expression {printf("expression -> expression ADD multiplicative_expression\n");}
+expression: expression ADD multiplicative_expression
+            {
+              string src1 = $1.dst;
+              string src2 = $3.dst;
+              string dst  = newTemp();
+              $$.setexp(dst, src1, src2, "+");
+              $$.code =  $1.code;
+              $$.code += $3.code;
+              $$.code += ". " + dst + "\n";
+              string exp = $$.op + " " + $$.dst + ", " + $$.src1 + ", " + $$.src2;
+              $$.code += exp;//cout << exp << endl;
+            }
           | expression SUB multiplicative_expression {printf("expression -> expression SUB multiplicative_expression\n");}
-          | multiplicative_expression                {printf("expression -> multiplicative_expression\n");}
+          | multiplicative_expression {$$.code = $1.code; appendIDs(&$$.ids, $1.ids);}
           ;
 
 multiplicative_expression: signed_term MULT multiplicative_expression
                            {
-                             $$.code =  $3.code;
-                             string result;
-                             string term1;
-                             string term2;
+                             string term1  = newTemp();
+                             string term2  = newTemp();
+                             string result = newTemp();
                              $$.code += "* " + result + ", " + term1 + ", " + term2;
-                             for (list<string>::iterator it = $3.ids.begin(); it != $3.ids.end(); ++it) {
-                               $$.ids.push_back(*it);
-                             }
+                             appendIDs(&$$.ids, $3.ids);
                            }
                          | signed_term DIV  multiplicative_expression
                            {
-                             $$.code =  $3.code;
-                             string result;
-                             string term1;
-                             string term2;
-                             $$.code += "* " + result + ", " + term1 + ", " + term2;
-                             for (list<string>::iterator it = $3.ids.begin(); it != $3.ids.end(); ++it) {
-                               $$.ids.push_back(*it);
-                             }
+                             //
                            }
                          | signed_term MOD  multiplicative_expression {printf("multiplicative_expression -> signed_term MOD multiplicative_expression\n");}
-                         | signed_term                                {printf("multiplicative_expression -> signed_term\n");}
+                         | signed_term                                {$$.code = $1.code; appendIDs(&$$.ids, $1.ids);}
                          ;
 
-signed_term: sign term {$$ = $1 + $2;}
+signed_term: sign term {$$.code = $1 + $2.code; appendIDs(&$$.ids, $2.ids);}
            ;
 
-term: variable                               {printf("term -> variable\n");}
-    | number                                 {printf("term -> number\n");}
-    | L_PAREN expression R_PAREN             {printf("term -> L_PAREN expression R_PAREN\n");}
+term: variable
+      {
+        list<var>::iterator it = $1.vars.begin(); 
+        $$.code += it->id;
+        $$.ids.push_back(it->id);
+      }
+    | number {$$.code = $1 + "\n";}
+    | L_PAREN expression R_PAREN             {$$.code = $2.code; appendIDs(&$$.ids, $2.ids);}
     | identifier L_PAREN expressions R_PAREN {printf("term -> identifier L_PAREN nested_expressions R_PAREN\n");}
     ;
 
-expressions: expressions COMMA expression {/*$$ = $1 + "\n" + $2;*/}
-           | expression                   {/*$$ = $1;*/} 
+expressions: expressions COMMA expression {$$.code = $1.code + $3.code; appendIDs(&$$.ids, $1.ids); appendIDs(&$$.ids, $3.ids);}
+           | expression                   {$$.code = $1.code; appendIDs(&$$.ids, $1.ids);} 
            ;
 
 sign: SUB           {$$ = "-";}
@@ -312,12 +382,14 @@ sign: SUB           {$$ = "-";}
 
 variable: identifier
           {
-            var temp = var($1, false, "");
+            var temp = var($1, false, "", "");
             $$.vars.push_back(temp);
           }
         | identifier L_SQUARE_BRACKET expression R_SQUARE_BRACKET
           {
-            var temp = var($1, true, $3.code);
+            //$3.code
+            string index = $3.dst;
+            var temp = var($1, true, index, $3.code);
             $$.vars.push_back(temp);
           }
         ;

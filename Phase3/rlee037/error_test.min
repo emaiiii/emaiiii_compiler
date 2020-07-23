@@ -6,4 +6,10 @@ beginlocals
   i1, i2, i3: integer; 
 endlocals
 beginbody
+  read i1;
+  i1 := 1;
+  write i1;
+  read a1[2 + 1];
+  a1[2 + 1] := 1;
+  write a1[2 + 1];
 endbody
